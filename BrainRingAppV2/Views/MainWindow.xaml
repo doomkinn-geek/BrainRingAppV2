@@ -1,0 +1,113 @@
+﻿<Window x:Class="BrainRingAppV2.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BrainRingAppV2.Views"
+        xmlns:viewmodels="clr-namespace:BrainRingAppV2.ViewModels"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen" WindowState="Maximized"
+        Title="{Binding WinTitle}" Height="1000" Width="800">
+    <Window.DataContext>
+        <viewmodels:MainWindowViewModel></viewmodels:MainWindowViewModel>
+    </Window.DataContext>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Таймер обратного отсчёта -->
+        <!-- Верхняя панель для отображения таймера обратного отсчёта -->
+        <Border x:Name="countdownBorder" Grid.Column="1" Grid.Row="0" Padding="10" CornerRadius="5" Margin="5" Background="White" BorderBrush="Black" BorderThickness="2">
+            <Viewbox Stretch="Uniform">
+                <TextBlock x:Name="countdownTextBlock" FontSize="80" FontWeight="Bold" 
+                    HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding CountdownText}"/>
+            </Viewbox>
+        </Border>
+
+        <Border x:Name="answerCandidatesBorder" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Padding="10" CornerRadius="5" Margin="5" Background="White" BorderBrush="Black" BorderThickness="2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="1 команда:" FontSize="48" FontWeight="Bold" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <Viewbox Grid.Row="1" Stretch="Uniform" Margin="10">
+                        <TextBlock Text="{Binding FirstCandidate}" FontSize="72" FontWeight="Bold" Margin="10" HorizontalAlignment="Center"/>
+                    </Viewbox>
+                </Grid>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="2 команда:" FontSize="48" FontWeight="Bold" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <Viewbox Grid.Row="1" Stretch="Uniform" Margin="10">
+                        <TextBlock Text="{Binding SecondCandidate}" FontSize="72" FontWeight="Bold" Margin="10" HorizontalAlignment="Center"/>
+                    </Viewbox>
+                </Grid>
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="3 команда:" FontSize="48" FontWeight="Bold" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <Viewbox Grid.Row="1" Stretch="Uniform" Margin="10">
+                        <TextBlock Text="{Binding ThirdCandidate}" FontSize="72" FontWeight="Bold" Margin="10" HorizontalAlignment="Center"/>
+                    </Viewbox>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- Панель для отображения состояния кнопок -->
+        <ItemsControl x:Name="infoButtonsPanel" ItemsSource="{Binding ButtonViewModels}" Grid.Column="1" Grid.Row="2" Grid.RowSpan="1">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Width="100" Height="100" Margin="10">
+                        <Ellipse Fill="{Binding Background}" Stroke="Black" StrokeThickness="2"/>
+                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center"> 
+                            <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2" Foreground="Black" FontWeight="Bold" FontSize="28"/>
+                            <TextBlock Text="{Binding PressTime}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2" Foreground="Black" FontWeight="Bold" FontSize="16"/>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+
+        <!-- Нижняя панель для отображения ошибок и ввода данных -->
+        <StackPanel Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Orientation="Vertical">
+            <!-- Панель для открытия и закрытия порта -->
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Open Port" Width="80" Command="{Binding OpenPortCommand}" Margin="5 5"/>
+                <Button Content="Close Port" Width="80" Command="{Binding ClosePortCommand}" Margin="5 5"/>
+            </StackPanel>
+
+            <!-- TextBox для отображения полученных данных -->
+            <TextBox Text="{Binding ReceivedData, Mode=TwoWay}" IsReadOnly="True" FontSize="16" Margin="0 10"/>
+
+            <!-- Панель для отображения ошибок -->
+            <Border x:Name="errorBorder" Visibility="Collapsed" Background="Red" Opacity="0.8" CornerRadius="10">
+                <TextBlock x:Name="errorTextBlock" Text="{Binding ErrorMessage}" Foreground="White" Margin="10" />
+            </Border>
+        </StackPanel>
+    </Grid>
+</Window>
