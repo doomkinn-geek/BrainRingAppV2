@@ -11,7 +11,12 @@ Period: 1 packet every 200 ms
 | N  | Format Description | ASCII Coding | Notes |
 |----|--------------------|--------------|-------|
 | 0  | SOF                |              |       |
-| 1  | HEX DIGIT IN SYSTEM STATE (phases) | ASCII CODING 0 – IDLE (RESET ALL), 1 - REGISTER FALSES, 2 - REGISTER EARLY | #define TFLAG_IDLE, #define TFLAG_FALSES, #define TFLAG_EARLY |
+| 1  | HEX DIGIT IN SYSTEM STATE (phases) | SYSTEM STATE (phases) :
+0 – IDLE (RESET ALL)
+1 - REGISTER FALSES
+2 - REGISTER EARLY
+3 - REGISTER OTHER
+4 - STOPPED | #define TFLAG_IDLE, #define TFLAG_FALSES, #define TFLAG_EARLY |
 | 2  | HEX DIGIT IN MOST SIGNIFICANT BIT | | |
 | 3  | REGISTER OTHER | | |
 | 4  | STOPPED | | #define TFLAG_STOPPED |
