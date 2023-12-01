@@ -58,26 +58,27 @@ namespace BrainRingAppV2.ViewModels
             set => Set(ref _errorMessage, value);
         }
 
-        private string _firstCandidate;
-        private string _secondCandidate;
-        private string _thirdCandidate;
+        // В ViewModel добавьте
+        private ButtonViewModel _firstCandidateViewModel;
+        private ButtonViewModel _secondCandidateViewModel;
+        private ButtonViewModel _thirdCandidateViewModel;
 
-        public string FirstCandidate
+        public ButtonViewModel FirstCandidateViewModel
         {
-            get => _firstCandidate;
-            set => Set(ref _firstCandidate, value);
+            get => _firstCandidateViewModel;
+            set => Set(ref _firstCandidateViewModel, value);
         }
 
-        public string SecondCandidate
+        public ButtonViewModel SecondCandidateViewModel
         {
-            get => _secondCandidate;
-            set => Set(ref _secondCandidate, value);
+            get => _secondCandidateViewModel;
+            set => Set(ref _secondCandidateViewModel, value);
         }
 
-        public string ThirdCandidate
+        public ButtonViewModel ThirdCandidateViewModel
         {
-            get => _thirdCandidate;
-            set => Set(ref _thirdCandidate, value);
+            get => _thirdCandidateViewModel;
+            set => Set(ref _thirdCandidateViewModel, value);
         }
 
 
@@ -118,23 +119,27 @@ namespace BrainRingAppV2.ViewModels
         {
             if (systemStateData.Length < 10) return;
 
-            char phase = systemStateData[1]; // Фаза работы устройства
-            int currentTime = ParseTime(systemStateData.Substring(2, 4)); // Текущее время
-            int totalTime = ParseTime(systemStateData.Substring(6, 4)); // Общее время
+            if(Enum.TryParse(systemStateData[1].ToString(), out PhaseEnum phase))
+    {
+                int currentTime = ParseTime(systemStateData.Substring(2, 4)); // Текущее время
+                int totalTime = ParseTime(systemStateData.Substring(6, 4)); // Общее время
 
-            UpdateCountdownDisplay(currentTime, totalTime);
-            UpdateStatus(phase);
+                UpdateCountdownDisplay(currentTime, totalTime);
+                UpdateStatus(phase);
+            }            
         }
 
         private void ParseButtonState(string buttonStateData, int buttonId)
         {
             if (buttonStateData.Length < 6) return;
 
-            char buttonState = buttonStateData[0]; // Состояние кнопки
-            int pressOrder = int.Parse(buttonStateData.Substring(1, 1), CultureInfo.InvariantCulture); // Порядок нажатия
-            int pressTime = ParseTime(buttonStateData.Substring(2, 4)); // Время нажатия
+            if (Enum.TryParse(buttonStateData[0].ToString(), out ButtonStateEnum buttonState))
+            {
+                int pressOrder = int.Parse(buttonStateData.Substring(1, 1), CultureInfo.InvariantCulture); // Порядок нажатия
+                int pressTime = ParseTime(buttonStateData.Substring(2, 4)); // Время нажатия
 
-            UpdateButtonDisplay(buttonId, buttonState, pressOrder, pressTime);
+                UpdateButtonDisplay(buttonId, buttonState, pressOrder, pressTime);
+            }
         }
 
         private int ParseTime(string timeData)
@@ -163,7 +168,7 @@ namespace BrainRingAppV2.ViewModels
             }
         }
 
-        private void UpdateButtonDisplay(int buttonId, char buttonState, int pressOrder, int pressTime)
+        private void UpdateButtonDisplay(int buttonId, ButtonStateEnum buttonState, int pressOrder, int pressTime)
         {
             if (Application.Current == null) return;
             Application.Current.Dispatcher.Invoke(() =>
@@ -175,7 +180,7 @@ namespace BrainRingAppV2.ViewModels
                     ButtonStates.Add(button);
                 }
 
-                button.State = GetButtonStateDescription(buttonState);
+                button.State = buttonState;
                 button.PressTime = pressTime;
                 button.PressOrder = pressOrder;
                 button.StateColor = GetButtonStateColor(buttonState);
@@ -200,29 +205,38 @@ namespace BrainRingAppV2.ViewModels
 
         private void UpdateCandidatesDisplay()
         {
+            // Обновите этот метод, чтобы он устанавливал модели представления для кандидатов
             var candidates = ButtonStates
-                .Where(b => b.State == "Нажата вовремя")
+                .Where(b => b.State == ButtonStateEnum.PressedOnTime || b.State == ButtonStateEnum.PressedEarly)
                 .OrderBy(b => b.PressOrder)
                 .Take(3)
-                //.Select(b => $"{b.ButtonId}\n{Math.Round((double)(b.PressTime / 1000), 3)}")
-                .Select(b => $"{b.ButtonId}")
                 .ToList();
 
-
-
-            FirstCandidate = candidates.ElementAtOrDefault(0) ?? string.Empty;
-            SecondCandidate = candidates.ElementAtOrDefault(1) ?? string.Empty;
-            ThirdCandidate = candidates.ElementAtOrDefault(2) ?? string.Empty;
+            FirstCandidateViewModel = candidates.Count > 0 ? ConvertToButtonViewModel(candidates[0]) : null;
+            SecondCandidateViewModel = candidates.Count > 1 ? ConvertToButtonViewModel(candidates[1]) : null;
+            ThirdCandidateViewModel = candidates.Count > 2 ? ConvertToButtonViewModel(candidates[2]) : null;
         }
 
-        private Brush GetButtonStateColor(char state)
+        private ButtonViewModel ConvertToButtonViewModel(ButtonState buttonState)
+        {
+            return new ButtonViewModel
+            {
+                ButtonId = buttonState.ButtonId,
+                Text = buttonState.ButtonId.ToString(),
+                Background = GetButtonStateColor(buttonState.State),
+                PressTime = buttonState.PressTime
+            };
+        }
+
+        private Brush GetButtonStateColor(ButtonStateEnum state)
         {
             return state switch
             {
-                '1' => Brushes.Red,    // Фальстарт
-                '2' => Brushes.Yellow, // Нажата рано
-                '3' => Brushes.Green,  // Нажата вовремя
-                _ => Brushes.Gray      // Не нажата или неизвестное состояние
+                ButtonStateEnum.Unpressed => Brushes.Gray,
+                ButtonStateEnum.FalseStart => Brushes.Red,    // Фальстарт
+                ButtonStateEnum.PressedEarly => Brushes.Yellow, // Нажата рано
+                ButtonStateEnum.PressedOnTime => Brushes.Green,  // Нажата вовремя
+                _ => Brushes.GhostWhite// Не нажата или неизвестное состояние
             };
         }
 
@@ -237,24 +251,19 @@ namespace BrainRingAppV2.ViewModels
                 _ => "Неизвестное состояние"
             };
         }
-
-        private void UpdateStatus(char phase)
+        
+        private void UpdateStatus(PhaseEnum phase)
         {
-            StatusText = $"Фаза: {GetPhaseDescription(phase)}";
-        }
-
-        private string GetPhaseDescription(char phase)
-        {
-            return phase switch
+            StatusText = phase switch
             {
-                '0' => "IDLE (RESET ALL)",
-                '1' => "REGISTER FALSES",
-                '2' => "REGISTER EARLY",
-                '3' => "REGISTER OTHER",
-                '4' => "STOPPED",
+                PhaseEnum.Idle => "Ожидание (все сброшено)",
+                PhaseEnum.RegisterFalseStarts => "Регистрация фальш стартов",
+                PhaseEnum.RegisterEarly => "Регистрация ранних нажатий",
+                PhaseEnum.RegisterOther => "Регистрация нажатий",
+                PhaseEnum.Stopped => "Остановлено",
+                // ... и так далее для всех случаев
                 _ => "Неизвестная фаза"
             };
         }
-
     }
 }

@@ -11,6 +11,7 @@
     <Window.DataContext>
         <viewmodels:MainWindowViewModel></viewmodels:MainWindowViewModel>
     </Window.DataContext>
+    
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -39,36 +40,55 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
+
+                <!-- Первая команда -->
                 <Grid Grid.Column="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="1 команда:" FontSize="48" FontWeight="Bold" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <Viewbox Grid.Row="1" Stretch="Uniform" Margin="10">
-                        <TextBlock Text="{Binding FirstCandidate}" FontSize="72" FontWeight="Bold" Margin="10" HorizontalAlignment="Center"/>
+                    <Viewbox Grid.Row="0" Stretch="Uniform" VerticalAlignment="Top">
+                        <TextBlock Text="1 команда:" Margin="5" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    </Viewbox>
+                    <Viewbox Grid.Row="1" Stretch="Uniform">
+                        <Border Background="{Binding FirstCandidateViewModel.Background}">
+                            <TextBlock Text="{Binding FirstCandidateViewModel.Text}" FontSize="72" FontWeight="Bold" Margin="10" HorizontalAlignment="Center"/>
+                        </Border>
                     </Viewbox>
                 </Grid>
+
+                <!-- Вторая команда -->
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="2 команда:" FontSize="48" FontWeight="Bold" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <Viewbox Grid.Row="1" Stretch="Uniform" Margin="10">
-                        <TextBlock Text="{Binding SecondCandidate}" FontSize="72" FontWeight="Bold" Margin="10" HorizontalAlignment="Center"/>
+                    <Viewbox Grid.Row="0" Stretch="Uniform" VerticalAlignment="Top">
+                        <TextBlock Text="2 команда:" Margin="5"  FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    </Viewbox>
+                    <Viewbox Grid.Row="1" Stretch="Uniform">
+                        <Border Background="{Binding SecondCandidateViewModel.Background}">
+                            <TextBlock Text="{Binding SecondCandidateViewModel.Text}" FontSize="72" FontWeight="Bold" Margin="10" HorizontalAlignment="Center"/>
+                        </Border>
                     </Viewbox>
                 </Grid>
+
+                <!-- Третья команда -->
                 <Grid Grid.Column="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="3 команда:" FontSize="48" FontWeight="Bold" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <Viewbox Grid.Row="1" Stretch="Uniform" Margin="10">
-                        <TextBlock Text="{Binding ThirdCandidate}" FontSize="72" FontWeight="Bold" Margin="10" HorizontalAlignment="Center"/>
+                    <Viewbox Grid.Row="0" Stretch="Uniform" VerticalAlignment="Top">
+                        <TextBlock Text="3 команда:" Margin="5"  FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    </Viewbox>
+                    <Viewbox Grid.Row="1" Stretch="Uniform">
+                        <Border Background="{Binding ThirdCandidateViewModel.Background}">
+                            <TextBlock Text="{Binding ThirdCandidateViewModel.Text}" FontSize="72" FontWeight="Bold" Margin="10" HorizontalAlignment="Center"/>
+                        </Border>
                     </Viewbox>
                 </Grid>
+
             </Grid>
         </Border>
 
@@ -99,6 +119,8 @@
             <StackPanel Orientation="Horizontal">
                 <Button Content="Open Port" Width="80" Command="{Binding OpenPortCommand}" Margin="5 5"/>
                 <Button Content="Close Port" Width="80" Command="{Binding ClosePortCommand}" Margin="5 5"/>
+                <TextBlock Text="Текущая фаза: " Margin="10,0,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                <TextBlock Text="{Binding StatusText}" Margin="10,0,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
             </StackPanel>
 
             <!-- TextBox для отображения полученных данных -->

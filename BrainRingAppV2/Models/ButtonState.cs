@@ -10,7 +10,7 @@ namespace BrainRingAppV2.Models
     public class ButtonState
     {
         public int ButtonId { get; set; }
-        public string State { get; set; }
+        public ButtonStateEnum State { get; set; }
         public int PressOrder { get; set; }
         public int PressTime { get; set; }
         public Brush StateColor { get; set; }
