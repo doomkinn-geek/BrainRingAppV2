@@ -4,6 +4,7 @@ using BrainRingAppV2.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO.Ports;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -81,6 +82,9 @@ namespace BrainRingAppV2.ViewModels
             set => Set(ref _thirdCandidateViewModel, value);
         }
 
+        public ObservableCollection<string> AvailablePorts { get; private set; }
+        public string SelectedPort { get; set; }
+
 
 
         public ICommand OpenPortCommand { get; }
@@ -92,7 +96,12 @@ namespace BrainRingAppV2.ViewModels
             ButtonStates = new ObservableCollection<ButtonState>();            
             ButtonViewModels = new ObservableCollection<ButtonViewModel>(); // Добавьте эту строку
 
-            OpenPortCommand = new RelayCommand(o => _serialPortService.OpenPort("COM5"), o => !_serialPortService.IsOpen);
+            AvailablePorts = new ObservableCollection<string>(SerialPort.GetPortNames());
+            SelectedPort = AvailablePorts.FirstOrDefault();
+
+            OpenPortCommand = new RelayCommand(
+                o => _serialPortService.OpenPort(SelectedPort),
+                o => !_serialPortService.IsOpen && !string.IsNullOrEmpty(SelectedPort));
             ClosePortCommand = new RelayCommand(o => _serialPortService.ClosePort(), o => _serialPortService.IsOpen);
 
             // Subscribe to the DataReceived event and update ReceivedData when data is received
@@ -100,6 +109,12 @@ namespace BrainRingAppV2.ViewModels
             {
                 ReceivedData = data.Trim();
                 ParseAndDisplayData(data);
+                ErrorMessage = "";
+            };
+
+            _serialPortService.ErrorOcured += (sender, error) =>
+            {
+                ErrorMessage = error.ToString();
             };
         }
 

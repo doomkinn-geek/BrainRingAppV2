@@ -11,28 +11,54 @@ namespace BrainRingAppV2.Services
         public bool IsOpen { get => _serialPort.IsOpen; }
 
         public event EventHandler<string> DataReceived;
+        public event EventHandler<string> ErrorOcured;
 
         public SerialPortService()
         {
-            _serialPort = new SerialPort
+            try
             {
-                BaudRate = 19200,
-                DataBits = 8,
-                Parity = Parity.None,
-                StopBits = StopBits.One
-            };
+                _serialPort = new SerialPort
+                {
+                    BaudRate = 19200,
+                    DataBits = 8,
+                    Parity = Parity.None,
+                    StopBits = StopBits.One
+                };
+            }
+            catch(Exception ex) 
+            {
+                ErrorOcured?.Invoke(this, ex.Message);
+            }
         }
 
         public void OpenPort(string portName)
         {
-            _serialPort.PortName = portName;
-            _serialPort.Open();
-            StartListening();
+            try
+            {
+                _serialPort.PortName = portName;
+                _serialPort.Open();
+                StartListening();
+            }
+            catch (Exception ex)
+            {
+                ErrorOcured?.Invoke(this, ex.Message);
+            }
         }
 
         public void ClosePort()
         {
-            _serialPort.Close();
+            try
+            {
+                _serialPort.Close();
+            }
+            catch(OperationCanceledException)
+            {
+                return;
+            }
+            catch (Exception ex)
+            {
+                ErrorOcured?.Invoke(this, ex.Message);
+            }
         }
 
         private void StartListening()
@@ -46,13 +72,18 @@ namespace BrainRingAppV2.Services
                         string receivedData = _serialPort.ReadLine();
                         DataReceived?.Invoke(this, receivedData);
                     }
+                    catch (OperationCanceledException)
+                    {
+                        return;
+                    }
                     catch (TimeoutException)
                     {
                         // Обработка исключений
                         continue;
                     }
-                    catch(Exception)
+                    catch(Exception ex)
                     {
+                        ErrorOcured?.Invoke(this, ex.Message);
                         continue;
                     }
                 }
