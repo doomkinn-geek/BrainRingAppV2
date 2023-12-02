@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:BrainRingAppV2.Views"
         xmlns:converters="clr-namespace:BrainRingAppV2.Converters"
         xmlns:viewmodels="clr-namespace:BrainRingAppV2.ViewModels"
+        xmlns:controls="clr-namespace:BrainRingAppV2.Controls"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen" WindowState="Maximized"
         Title="{Binding WinTitle}" Height="1000" Width="800">
@@ -117,7 +118,7 @@
 
 
         <!-- Нижняя панель для отображения ошибок и ввода данных -->
-        <StackPanel Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Orientation="Vertical">
+        <StackPanel Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" Orientation="Vertical">
             <!-- Панель для открытия и закрытия порта -->
             <StackPanel Orientation="Horizontal">
                 <ComboBox ItemsSource="{Binding AvailablePorts}"
@@ -125,6 +126,7 @@
                   Width="100" Margin="5" />
                 <Button Content="Open Port" Width="80" Command="{Binding OpenPortCommand}" Margin="5 5"/>
                 <Button Content="Close Port" Width="80" Command="{Binding ClosePortCommand}" Margin="5 5"/>
+                <Button Content=" sec -- " Width="60" Command="{Binding SecondsDecrease}" Margin="5 5"/>
                 <TextBlock Text="Текущая фаза: " Margin="10,0,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
                 <TextBlock Text="{Binding StatusText}" Margin="10,0,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>                
 
@@ -138,5 +140,8 @@
                 <TextBlock x:Name="errorTextBlock" Text="{Binding ErrorMessage}" Foreground="White" Margin="10" />
             </Border>
         </StackPanel>
+        <!-- Добавляем UserControl секундомера в нужную позицию -->
+        <controls:CountdownTimerControl x:Name="countdownTimerControl" RemainingSeconds="{Binding Seconds, Mode=TwoWay}" Grid.Column="1" Grid.Row="3"/>
+
     </Grid>
 </Window>

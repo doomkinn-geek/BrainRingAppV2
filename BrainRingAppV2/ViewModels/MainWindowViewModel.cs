@@ -116,6 +116,7 @@ namespace BrainRingAppV2.ViewModels
             {
                 ErrorMessage = error.ToString();
             };
+            Seconds = 30;
         }
 
         private void ParseAndDisplayData(string receivedData)
@@ -279,6 +280,18 @@ namespace BrainRingAppV2.ViewModels
                 // ... и так далее для всех случаев
                 _ => "Неизвестная фаза"
             };
+        }
+
+        private int seconds;
+
+        public int Seconds { get => seconds; set => Set(ref seconds, value); }
+
+        private RelayCommand secondsDecrease;
+        public ICommand SecondsDecrease => secondsDecrease ??= new RelayCommand(PerformSecondsDecrease);
+
+        private void PerformSecondsDecrease(object commandParameter)
+        {
+            Seconds--;
         }
     }
 }
