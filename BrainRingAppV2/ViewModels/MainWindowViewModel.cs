@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 
 namespace BrainRingAppV2.ViewModels
@@ -85,10 +86,26 @@ namespace BrainRingAppV2.ViewModels
         public ObservableCollection<string> AvailablePorts { get; private set; }
         public string SelectedPort { get; set; }
 
+        private bool isTestPanelVisible;
+        public bool IsTestPanelVisible
+        {
+            get => isTestPanelVisible;
+            set => Set(ref isTestPanelVisible, value);
+        }
+
+
 
 
         public ICommand OpenPortCommand { get; }
-        public ICommand ClosePortCommand { get; }        
+        public ICommand ClosePortCommand { get; }
+        public ICommand ToggleTestPanelCommand { get; }
+        private RelayCommand secondsDecrease;
+        public ICommand SecondsDecrease => secondsDecrease ??= new RelayCommand(PerformSecondsDecrease);
+        private RelayCommand secondIncrease;
+        public ICommand SecondIncrease => secondIncrease ??= new RelayCommand(PerformSecondIncrease);
+        private RelayCommand addTestDataCommand;
+        public ICommand AddTestDataCommand => addTestDataCommand ??= new RelayCommand(AddTestData);
+
 
         public MainWindowViewModel()
         {
@@ -116,7 +133,13 @@ namespace BrainRingAppV2.ViewModels
             {
                 ErrorMessage = error.ToString();
             };
-            Seconds = 30;
+
+            ToggleTestPanelCommand = new RelayCommand(ToggleTestPanel);
+            Seconds = 0;
+        }
+        private void ToggleTestPanel(object parameter)
+        {
+            IsTestPanelVisible = !IsTestPanelVisible;
         }
 
         private void ParseAndDisplayData(string receivedData)
@@ -176,6 +199,7 @@ namespace BrainRingAppV2.ViewModels
 
                     //CountdownText = $"Текущее время: {currentTimeInSeconds:F2} сек / Общее время: {totalTimeInSeconds:F2} сек";
                     CountdownText = $"{currentTimeInSeconds:F2}";
+                    Seconds = (int)Math.Ceiling(currentTimeInSeconds);
                 });
             }
             catch (Exception e) 
@@ -286,12 +310,21 @@ namespace BrainRingAppV2.ViewModels
 
         public int Seconds { get => seconds; set => Set(ref seconds, value); }
 
-        private RelayCommand secondsDecrease;
-        public ICommand SecondsDecrease => secondsDecrease ??= new RelayCommand(PerformSecondsDecrease);
-
+        
         private void PerformSecondsDecrease(object commandParameter)
         {
             Seconds--;
+        }
+                
+        private void PerformSecondIncrease(object commandParameter)
+        {
+            Seconds++;
+        }       
+
+        private void AddTestData(object commandParameter)
+        {
+            ReceivedData = "!471429C40:3322EC:000000:000000:100349:32169C:000000:000000:2103B9";
+            ParseAndDisplayData(ReceivedData); 
         }
     }
 }

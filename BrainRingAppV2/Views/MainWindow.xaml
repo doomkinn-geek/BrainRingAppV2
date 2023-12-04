@@ -15,7 +15,12 @@
     </Window.DataContext>
     <Window.Resources>
         <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
+    <Window.InputBindings>
+        <KeyBinding Key="P" Modifiers="Control" Command="{Binding ToggleTestPanelCommand}" />
+    </Window.InputBindings>
+
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -30,9 +35,9 @@
 
         <!-- Таймер обратного отсчёта -->
         <!-- Верхняя панель для отображения таймера обратного отсчёта -->
-        <Border x:Name="countdownBorder" Grid.Column="1" Grid.Row="0" Padding="10" CornerRadius="5" Margin="5" Background="White" BorderBrush="Black" BorderThickness="2">
+        <Border x:Name="countdownBorder" Grid.Column="1" Grid.Row="3" Padding="10" CornerRadius="5" Margin="5" Background="White" BorderBrush="Black" BorderThickness="2" Visibility="Collapsed">
             <Viewbox Stretch="Uniform">
-                <TextBlock x:Name="countdownTextBlock" FontSize="80" FontWeight="Bold" 
+                <TextBlock x:Name="countdownTextBlock" FontSize="5" FontWeight="Bold" 
                     HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding CountdownText}"/>
             </Viewbox>
         </Border>
@@ -96,52 +101,60 @@
             </Grid>
         </Border>
 
-        <!-- Панель для отображения состояния кнопок -->
-        <ItemsControl x:Name="infoButtonsPanel" ItemsSource="{Binding ButtonViewModels}" Grid.Column="1" Grid.Row="2" Grid.RowSpan="1">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel IsItemsHost="True" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid Width="150" Height="150" Margin="10">
-                        <Ellipse Fill="{Binding Background}" Stroke="Black" StrokeThickness="2"/>
-                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center"> 
-                            <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2" Foreground="Black" FontWeight="Bold" FontSize="28"/>
-                            <TextBlock Text="{Binding PressTime}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2" Foreground="Black" FontWeight="Bold" FontSize="16"/>
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <Border Grid.Column="1" Grid.Row="2" Grid.RowSpan="1" Padding="10" CornerRadius="5" Margin="5" Background="White" BorderBrush="Black" BorderThickness="2">
+            <!-- Панель для отображения состояния кнопок -->
+            <ItemsControl x:Name="infoButtonsPanel" ItemsSource="{Binding ButtonViewModels}" >
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Width="150" Height="150" Margin="10">
+                            <Ellipse Fill="{Binding Background}" Stroke="Black" StrokeThickness="2"/>
+                            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2" Foreground="Black" FontWeight="Bold" FontSize="35"/>
+                                <TextBlock Text="{Binding PressTime}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2" Foreground="Black" FontWeight="Bold" FontSize="25"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
 
-
-        <!-- Нижняя панель для отображения ошибок и ввода данных -->
-        <StackPanel Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" Orientation="Vertical">
-            <!-- Панель для открытия и закрытия порта -->
-            <StackPanel Orientation="Horizontal">
-                <ComboBox ItemsSource="{Binding AvailablePorts}"
+        <Border Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Padding="10" CornerRadius="5" Margin="5" Background="White" BorderBrush="Black" BorderThickness="2">
+            <!-- Нижняя панель для отображения ошибок и ввода данных -->
+            <StackPanel Orientation="Vertical">
+                <!-- Панель для открытия и закрытия порта -->
+                <StackPanel Orientation="Horizontal">
+                    <ComboBox ItemsSource="{Binding AvailablePorts}"
                   SelectedItem="{Binding SelectedPort}"                  
                   Width="100" Margin="5" />
-                <Button Content="Open Port" Width="80" Command="{Binding OpenPortCommand}" Margin="5 5"/>
-                <Button Content="Close Port" Width="80" Command="{Binding ClosePortCommand}" Margin="5 5"/>
-                <Button Content=" sec -- " Width="60" Command="{Binding SecondsDecrease}" Margin="5 5"/>
-                <TextBlock Text="Текущая фаза: " Margin="10,0,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                <TextBlock Text="{Binding StatusText}" Margin="10,0,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>                
+                    <Button Content="Open Port" Width="80" Command="{Binding OpenPortCommand}" Margin="5 5"/>
+                    <Button Content="Close Port" Width="80" Command="{Binding ClosePortCommand}" Margin="5 5"/>
+                    <TextBlock Text="Текущая фаза: " Margin="10,0,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock Text="{Binding StatusText}" Margin="10,0,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
 
+                </StackPanel>
+
+                <!-- TextBox для отображения полученных данных -->
+                <TextBox Text="{Binding ReceivedData, Mode=TwoWay}" IsReadOnly="True" FontSize="16" Margin="0 10"/>
+                <StackPanel x:Name="testPanel" Orientation="Horizontal" Visibility="{Binding IsTestPanelVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Button Content=" sec -- " Width="60" Command="{Binding SecondsDecrease}" Margin="5 5"/>
+                    <Button Content=" sec ++ " Width="60" Command="{Binding SecondIncrease}" Margin="5 5"/>
+                    <Button Content="Parse test data" Width="90" Command="{Binding AddTestDataCommand}" Margin="5 5" />
+                    <TextBlock FontSize="20" FontWeight="Bold" Margin="25 5" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding CountdownText}"/>
+                </StackPanel>
+
+                <!-- Панель для отображения ошибок -->
+                <Border x:Name="errorBorder" Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}" Background="Red" Opacity="0.8" CornerRadius="10">
+                    <TextBlock x:Name="errorTextBlock" Text="{Binding ErrorMessage}" Foreground="White" Margin="10" />
+                </Border>
             </StackPanel>
-
-            <!-- TextBox для отображения полученных данных -->
-            <TextBox Text="{Binding ReceivedData, Mode=TwoWay}" IsReadOnly="True" FontSize="16" Margin="0 10"/>
-
-            <!-- Панель для отображения ошибок -->
-            <Border x:Name="errorBorder" Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}" Background="Red" Opacity="0.8" CornerRadius="10">
-                <TextBlock x:Name="errorTextBlock" Text="{Binding ErrorMessage}" Foreground="White" Margin="10" />
-            </Border>
-        </StackPanel>
-        <!-- Добавляем UserControl секундомера в нужную позицию -->
-        <controls:CountdownTimerControl x:Name="countdownTimerControl" RemainingSeconds="{Binding Seconds, Mode=TwoWay}" Grid.Column="1" Grid.Row="3"/>
-
+        </Border>
+        <Border x:Name="countdownTimerBorder" Grid.Column="1" Grid.Row="0" Padding="10" CornerRadius="5" Margin="5" Background="White" BorderBrush="Black" BorderThickness="2">
+            <controls:CountdownTimerControl x:Name="countdownTimerControl" RemainingSeconds="{Binding Seconds, Mode=TwoWay}" />
+        </Border>
     </Grid>
 </Window>
