@@ -112,7 +112,7 @@ namespace BrainRingAppV2.Controls
                     TextBlock text = new TextBlock
                     {
                         Text = $"{(i * 5) % 60}",
-                        FontSize = 12,
+                        FontSize = 16,
                         FontWeight = FontWeights.Bold
                     };
                     double textAngle = (i * 5 % 60) * Math.PI / 30 - Math.PI / 2;

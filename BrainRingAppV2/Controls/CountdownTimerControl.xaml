@@ -19,7 +19,7 @@
             <!-- Текстовое отображение оставшегося времени внутри прямоугольника -->
             <Canvas x:Name="textContainer" Canvas.Left="75" Canvas.Top="130">
                 <Rectangle x:Name="textBackground" Stroke="Gray" Fill="LightGray" Opacity="0.5" StrokeThickness="1" RadiusX="10" RadiusY="10" Width="50" Height="25"/>
-                <TextBlock x:Name="txtCountdown" Text="00" FontSize="16" FontWeight="Bold" Foreground="Black" TextAlignment="Center" Width="50" Height="25"/>
+                <TextBlock x:Name="txtCountdown" Text="00" FontSize="18" FontWeight="Bold" Foreground="Black" TextAlignment="Center" Width="50" Height="25"/>
             </Canvas>
 
         </Canvas>

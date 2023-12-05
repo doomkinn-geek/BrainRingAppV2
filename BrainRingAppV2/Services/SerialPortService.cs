@@ -7,6 +7,7 @@ namespace BrainRingAppV2.Services
     public class SerialPortService
     {
         private SerialPort _serialPort;
+        private string _keptData;
 
         public bool IsOpen { get => _serialPort.IsOpen; }
 
@@ -70,7 +71,11 @@ namespace BrainRingAppV2.Services
                     try
                     {
                         string receivedData = _serialPort.ReadLine();
-                        DataReceived?.Invoke(this, receivedData);
+                        if (receivedData != _keptData)
+                        {
+                            DataReceived?.Invoke(this, receivedData);
+                            _keptData = receivedData;
+                        }
                     }
                     catch (OperationCanceledException)
                     {
